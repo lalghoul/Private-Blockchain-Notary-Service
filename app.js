@@ -12,6 +12,8 @@ class BlockchainAPI {
    */
   constructor() {
     this.app = express();
+    this.app.use(bodyParser.json()); // support json encoded bodies
+    this.app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
     this.initExpress();
     this.initExpressMiddleWare();
     this.initControllers();
@@ -29,8 +31,8 @@ class BlockchainAPI {
    * Initialization of the middleware modules
    */
   initExpressMiddleWare() {
-    this.app.use(bodyParser.urlencoded({ extended: true }));
-    this.app.use(bodyParser.json());
+    this.app.use(bodyParser.json()); // support json encoded bodies
+    this.app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
   }
 
   /**
