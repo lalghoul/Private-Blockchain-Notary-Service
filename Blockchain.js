@@ -71,7 +71,7 @@ class Blockchain {
           currentHeight++;
         })
         .on("error", function(err) {
-          return console.log("Unable to get block height", err);
+          console.log("Unable to get block height", err);
           reject(err);
         })
         .on("close", function() {
@@ -191,25 +191,7 @@ class Blockchain {
       });
   }
   // Get block by hash
-  getBlockByHash(hash) {
-    let self = this;
-    let block = null;
-    return new Promise(function(resolve, reject) {
-      self.db
-        .createReadStream()
-        .on("data", function(data) {
-          if (data.hash === hash) {
-            block = data;
-          }
-        })
-        .on("error", function(err) {
-          reject(err);
-        })
-        .on("close", function() {
-          resolve(block);
-        });
-    });
-  }
+
   getBlockByWalletAddress(address) {
     let self = this;
     let block = null;
