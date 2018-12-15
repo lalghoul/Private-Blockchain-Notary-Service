@@ -1,6 +1,6 @@
 # Private Blockchain Notary Service
 
-This project is private Blockchain that stores favorite stars for users locally using LevelDB integrated with RESTFUL API to GET and POST Blocks.
+This project is private Blockchain that stores favorite stars for users locally using LevelDB integrated with RESTFUL API.
 
 ## Getting Started
 
@@ -187,3 +187,6 @@ curl -X POST \
 - [ExpressJs](https://expressjs.com) - The web framework used.
 - [LevelDB](http://leveldb.org/) - Database.
 - [Crypto-js](https://www.npmjs.com/package/crypto-js) - Used to hash blocks with SHA256.
+- [hex2ascii](https://www.npmjs.com/package/hex2ascii) - Convert hex to ascii in JavaScript.
+- [bitcoinjs-message](https://www.npmjs.com/package/bitcoinjs-message) - Sign a Bitcoin message.
+- [bitcoinjs-lib](https://www.npmjs.com/package/bitcoinjs-lib) - A javascript Bitcoin library for node.js and browsers.
