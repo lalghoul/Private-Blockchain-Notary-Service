@@ -1,6 +1,6 @@
-# Private Blockchain with RESTFUL API
+# Private Blockchain Notary Service
 
-This project is private Blockchain that store data locally using LevelDB integrated with RESTFUL API to GET and POST Blocks.
+This project is private Blockchain that stores favorite stars for users locally using LevelDB integrated with RESTFUL API to GET and POST Blocks.
 
 ## Getting Started
 
@@ -62,6 +62,124 @@ Connection →close
 Content-Length →207
 ETag →W/"cf-1dfORKZcSoeamE44HYEj6a4iUPs"
 Date →Sat, 03 Nov 2018 19:57:11 GMT
+```
+
+## Example submits a validation request
+
+Users start out by submitting a validation request to an API endpoint:
+
+```
+curl -X POST \
+  http://localhost:8000/requestValidation \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+    "address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
+}'
+```
+
+Then You should receive a response:
+
+```
+X-Powered-By →Express
+address →1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC
+message →1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC:1544887415:starRegistery
+requestedTimestamp →1544887415
+timeLeft →300
+Date →Sat, 15 Dec 2018 15:23:35 GMT
+Connection →keep-alive
+Content-Length →0
+```
+
+After that you need to sign message and send your address with signature:
+
+```
+curl -X POST \
+  http://localhost:8000/message-signature/validate/ \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+    "address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
+    "signature":"IF8STiQpRybrvdBpfnVaRTKzqd4d1gjp85RM8O//+lGfSD1XZtePuGPrjYGHQSVEEqau+tyCnGQf1Bo1b4uLgYM="
+}'
+```
+
+And you will receive a response like that:
+
+```
+X-Powered-By →Express
+Content-Type →application/x-www-form-urlencoded
+Status →{"address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC","requestTimeStamp":"1544892006","message":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC:1544892006:starRegistery","validationWindow":1800,"messageSignature":true}
+Date →Sat, 15 Dec 2018 16:40:18 GMT
+Connection →keep-alive
+Content-Length →0
+```
+
+Now you can register your favorite start by sending a request:
+
+```
+curl -X POST \
+  http://localhost:8000/message-signature/validate/ \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+    "address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
+    "star":" {
+            "dec": "68° 52' 56.9",
+            "ra": "16h 29m 1.0s",
+            "story": "Found star using https://www.google.com/sky/"
+        }"
+}'
+```
+
+Congrats! Your favorite star has been added:
+
+```
+X-Powered-By →Express
+Content-Type →application/x-www-form-urlencoded
+Status →Star Successfully Added
+Block →{"hash":"b0df8e59f9cc5df9df92a14424a80f988faa78bf9a35125b2feae1bf6c31c6ed","height":113,"body":{"address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC","stardata":{"ra":"16h 29m 1.0s","dec":"68° 52' 56.9","story":"466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f"}},"time":"1544892231","previousBlockHash":"2230724804633f7862c1038f558be8edb7a488b93cb4126601970321978fd948","storyDecoded":"Found star using https://www.google.com/sky/"}
+Date →Sat, 15 Dec 2018 16:43:51 GMT
+Connection →keep-alive
+Content-Length →0
+```
+
+Now you can search for your star using hash,address or height:
+
+Example searching using address:
+
+```
+curl -X POST \
+  http://localhost:8000/stars/ \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+    "address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
+}'
+```
+
+Example searching using hash:
+
+```
+curl -X POST \
+  http://localhost:8000/stars/ \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+    "hash":"b0df8e59f9cc5df9df92a14424a80f988faa78bf9a35125b2feae1bf6c31c6ed"
+}'
+```
+
+Example searching using height:
+
+```
+curl -X POST \
+  http://localhost:8000/stars/ \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+    "height":"1"
+}'
 ```
 
 ## Built With
