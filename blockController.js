@@ -51,30 +51,57 @@ class BlockchainController {
     });
   }
   getBlockByHash() {
-    this.app.get("/stars/:hash", (req, res) => {
+    this.app.get("/stars/", (req, res) => {
       this.chain.getBlockHeight().then(height => {
         let count = JSON.parse(height);
-        let hash = req.params.hash;
         let block = null;
         for (let i = 0; i <= count; i++) {
           this.chain.getBlock(i).then(data => {
             data = JSON.parse(data);
-            if (data.hash == hash) {
-              block = data;
-              let body = block.body;
-              body.stardata.story = hex2ascii(body.stardata.story);
-              res.set(200);
-              res.set("Content-Type", "text/plain");
-              res.set("Data", JSON.stringify(block));
-              res.set("Connection", "close");
-              res.status(200).send(block);
-              return;
+            let body = data.body;
+            if (req.body.hash != undefined) {
+              if (data.hash == req.body.hash) {
+                block = data;
+                body.stardata.story = hex2ascii(body.stardata.story);
+                res.set(200);
+                res.set("Content-Type", "text/plain");
+                res.set("Data", JSON.stringify(block.body));
+                res.set("Connection", "close");
+                res.status(200).send(block);
+                res.end();
+                return;
+              }
+            } else if (req.body.address != undefined) {
+              if (body.address == req.body.address) {
+                block = data;
+                body.stardata.story = hex2ascii(body.stardata.story);
+                res.set(200);
+                res.set("Content-Type", "text/plain");
+                res.set("Data", JSON.stringify(block.body));
+                res.set("Connection", "close");
+                res.status(200).send(block);
+                res.end();
+                return;
+              }
+            } else if (req.body.height != undefined) {
+              if (data.height == req.body.height) {
+                block = data;
+                body.stardata.story = hex2ascii(body.stardata.story);
+                res.set(200);
+                res.set("Content-Type", "text/plain");
+                res.set("Data", JSON.stringify(block.body));
+                res.set("Connection", "close");
+                res.status(200).send(block);
+                res.end();
+                return;
+              }
             }
           });
         }
       });
     });
   }
+
   postNewBlock() {
     let self = this;
     return this.app.post("/block/:data", (req, res) => {
