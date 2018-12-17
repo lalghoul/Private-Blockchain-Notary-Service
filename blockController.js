@@ -24,7 +24,6 @@ class BlockchainController {
     this.timeoutRequests = [];
     this.chain = new BlockchainClass.Blockchain();
     this.validateWallet();
-    this.getBlockByIndex();
     this.postNewBlock();
     this.getStar();
     this.requestValidation();

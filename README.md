@@ -49,68 +49,84 @@ curl -X POST \
 
 Then You should receive a response:
 
-```
-X-Powered-By →Express
-address →1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC
-message →1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC:1544887415:starRegistery
-requestedTimestamp →1544887415
-timeLeft →300
-Date →Sat, 15 Dec 2018 15:23:35 GMT
-Connection →keep-alive
-Content-Length →0
-```
+````
+{
+    "address": "1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC",
+    "requestTimeStamp": "1545081932",
+    "message": "1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC:1545081932:starRegistery",
+    "timeLeft": 300
+}```
 
 ## After that you need to sign message and send your address with signature:
 
-```
+````
+
 curl -X POST \
-  http://localhost:8000/message-signature/validate/ \
-  -H 'Content-Type: application/json' \
-  -H 'cache-control: no-cache' \
-  -d '{
-    "address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
-    "signature":"IF8STiQpRybrvdBpfnVaRTKzqd4d1gjp85RM8O//+lGfSD1XZtePuGPrjYGHQSVEEqau+tyCnGQf1Bo1b4uLgYM="
+ http://localhost:8000/message-signature/validate/ \
+ -H 'Content-Type: application/json' \
+ -H 'cache-control: no-cache' \
+ -d '{
+"address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
+"signature":"IF8STiQpRybrvdBpfnVaRTKzqd4d1gjp85RM8O//+lGfSD1XZtePuGPrjYGHQSVEEqau+tyCnGQf1Bo1b4uLgYM="
 }'
+
 ```
 
 And you will receive a response like that:
 
 ```
-X-Powered-By →Express
-Content-Type →application/x-www-form-urlencoded
-Status →{"address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC","requestTimeStamp":"1544892006","message":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC:1544892006:starRegistery","validationWindow":1800,"messageSignature":true}
-Date →Sat, 15 Dec 2018 16:40:18 GMT
-Connection →keep-alive
-Content-Length →0
+
+{
+"registerStar": true,
+"status": {
+"address": "1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC",
+"requestTimeStamp": "1545081932",
+"message": "1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC:1545081932:starRegistery",
+"validationWindow": 1800,
+"messageSignature": true
+}
+}
+
 ```
 
 ## Now you can register your favorite start by sending a request:
 
 ```
+
 curl -X POST \
-  http://localhost:8000/block/ \
-  -H 'Content-Type: application/json' \
-  -H 'cache-control: no-cache' \
-  -d '{
-    "address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
-    "star":" {
-            "dec": "68° 52' 56.9",
-            "ra": "16h 29m 1.0s",
-            "story": "Found star using https://www.google.com/sky/"
-        }"
+ http://localhost:8000/block/ \
+ -H 'Content-Type: application/json' \
+ -H 'cache-control: no-cache' \
+ -d '{
+"address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
+"star":" {
+"dec": "68° 52' 56.9",
+"ra": "16h 29m 1.0s",
+"story": "Found star using https://www.google.com/sky/"
+}"
 }'
+
 ```
 
 Congrats! Your favorite star has been added:
 
 ```
-X-Powered-By →Express
-Content-Type →application/x-www-form-urlencoded
-Status →Star Successfully Added
-Block →{"hash":"b0df8e59f9cc5df9df92a14424a80f988faa78bf9a35125b2feae1bf6c31c6ed","height":113,"body":{"address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC","stardata":{"ra":"16h 29m 1.0s","dec":"68° 52' 56.9","story":"466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f"}},"time":"1544892231","previousBlockHash":"2230724804633f7862c1038f558be8edb7a488b93cb4126601970321978fd948","storyDecoded":"Found star using https://www.google.com/sky/"}
-Date →Sat, 15 Dec 2018 16:43:51 GMT
-Connection →keep-alive
-Content-Length →0
+
+{
+"hash": "65269605d01a74323264c9f368f204fd7ba3bd22dca00b2a4542595419e4a9b5",
+"height": 12,
+"body": {
+"address": "1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC",
+"stardata": {
+"ra": "16h 29m 1.0s",
+"dec": "68° 52' 56.9",
+"story": "466f756e642073746172207573696e672068747470733a2f2f7777772e676f6f676c652e636f6d2f736b792f"
+}
+},
+"time": "1545082032",
+"previousBlockHash": "9ffa9ef32bd7db53ad0047b76b7c40e206ced93ff1cc710d7236b5b1f841fe1b"
+}
+
 ```
 
 Now you can search for your star using hash,address or height:
@@ -118,37 +134,43 @@ Now you can search for your star using hash,address or height:
 ## Example searching using address:
 
 ```
+
 curl -X POST \
-  http://localhost:8000/stars/ \
-  -H 'Content-Type: application/json' \
-  -H 'cache-control: no-cache' \
-  -d '{
-    "address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
+ http://localhost:8000/stars/ \
+ -H 'Content-Type: application/json' \
+ -H 'cache-control: no-cache' \
+ -d '{
+"address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
 }'
+
 ```
 
 ## Example searching using hash:
 
 ```
+
 curl -X POST \
-  http://localhost:8000/stars/ \
-  -H 'Content-Type: application/json' \
-  -H 'cache-control: no-cache' \
-  -d '{
-    "hash":"b0df8e59f9cc5df9df92a14424a80f988faa78bf9a35125b2feae1bf6c31c6ed"
+ http://localhost:8000/stars/ \
+ -H 'Content-Type: application/json' \
+ -H 'cache-control: no-cache' \
+ -d '{
+"hash":"b0df8e59f9cc5df9df92a14424a80f988faa78bf9a35125b2feae1bf6c31c6ed"
 }'
+
 ```
 
 ## Example searching using height:
 
 ```
+
 curl -X POST \
-  http://localhost:8000/stars/ \
-  -H 'Content-Type: application/json' \
-  -H 'cache-control: no-cache' \
-  -d '{
-    "height":"1"
+ http://localhost:8000/stars/ \
+ -H 'Content-Type: application/json' \
+ -H 'cache-control: no-cache' \
+ -d '{
+"height":"1"
 }'
+
 ```
 
 ## Built With
@@ -159,3 +181,4 @@ curl -X POST \
 - [hex2ascii](https://www.npmjs.com/package/hex2ascii) - Convert hex to ascii in JavaScript.
 - [bitcoinjs-message](https://www.npmjs.com/package/bitcoinjs-message) - Sign a Bitcoin message.
 - [bitcoinjs-lib](https://www.npmjs.com/package/bitcoinjs-lib) - A javascript Bitcoin library for node.js and browsers.
+```
