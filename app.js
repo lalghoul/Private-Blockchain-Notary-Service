@@ -17,6 +17,7 @@ class BlockchainAPI {
     this.initExpress();
     this.initExpressMiddleWare();
     this.initControllers();
+
     this.start();
   }
 
