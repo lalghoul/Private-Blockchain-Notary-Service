@@ -33,23 +33,24 @@ curl -X POST \
   -H 'cache-control: no-cache' \
   -d '{
     "address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
-}'
+}
+
 ```
 
 Then You should receive a response:
 
-````
+```
 {
     "address": "1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC",
     "requestTimeStamp": "1545081932",
     "message": "1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC:1545081932:starRegistery",
     "timeLeft": 300
-}```
+}
+```
 
 ## After that you need to sign message and send your address with signature:
 
-````
-
+```
 curl -X POST \
  http://localhost:8000/message-signature/validate/ \
  -H 'Content-Type: application/json' \
@@ -170,4 +171,7 @@ curl -X POST \
 - [hex2ascii](https://www.npmjs.com/package/hex2ascii) - Convert hex to ascii in JavaScript.
 - [bitcoinjs-message](https://www.npmjs.com/package/bitcoinjs-message) - Sign a Bitcoin message.
 - [bitcoinjs-lib](https://www.npmjs.com/package/bitcoinjs-lib) - A javascript Bitcoin library for node.js and browsers.
+
+```
+
 ```
