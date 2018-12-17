@@ -33,37 +33,6 @@ http://localhost:8000/block/[blockheight]
 Example URL path:
 http://localhost:8000/block/0, where '0' is the block height.
 
-## Example GET Response
-
-For URL, http://localhost:8000/block/0
-
-```
-X-Powered-By →Express
-Content-Type →text/plain; charset=utf-8
-Data →{"hash":"e4d04d5522c0a2d777695e8b374211fae3bf4f270f45924ce635682bb1b87e35","height":0,"body":"Test Block","time":"1541273025","previousBlockHash":""}
-Connection →close
-Content-Length →208
-ETag →W/"d0-Nam5HnrdK6hqMyz5HW9XEqdxgVs"
-Date →Sat, 03 Nov 2018 19:23:45 GMT
-```
-
-## Example POST Response
-
-Example URL path:
-http://localhost:8000/block/(Mydata) where (Mydata) is the block data.
-
-Example For URL, http://localhost:8000/block/Foo
-
-```
-X-Powered-By →Express
-Content-Type →text/plain; charset=utf-8
-Data →{"hash":"5a4cfcb0eeb4ea09eeba722fec4fa8795cb1b8aef3c855f92f59eef4ee956a4e","height":21,"body":"Foo","time":"1541275030","previousBlockHash":"e4d04d5522c0a2d777695e8b374211fae3bf4f270f45924ce635682bb1b87e35"}
-Connection →close
-Content-Length →207
-ETag →W/"cf-1dfORKZcSoeamE44HYEj6a4iUPs"
-Date →Sat, 03 Nov 2018 19:57:11 GMT
-```
-
 ## Example submits a validation request
 
 Users start out by submitting a validation request to an API endpoint:
@@ -91,7 +60,7 @@ Connection →keep-alive
 Content-Length →0
 ```
 
-After that you need to sign message and send your address with signature:
+## After that you need to sign message and send your address with signature:
 
 ```
 curl -X POST \
@@ -115,11 +84,11 @@ Connection →keep-alive
 Content-Length →0
 ```
 
-Now you can register your favorite start by sending a request:
+## Now you can register your favorite start by sending a request:
 
 ```
 curl -X POST \
-  http://localhost:8000/message-signature/validate/ \
+  http://localhost:8000/block/ \
   -H 'Content-Type: application/json' \
   -H 'cache-control: no-cache' \
   -d '{
@@ -146,7 +115,7 @@ Content-Length →0
 
 Now you can search for your star using hash,address or height:
 
-Example searching using address:
+## Example searching using address:
 
 ```
 curl -X POST \
@@ -158,7 +127,7 @@ curl -X POST \
 }'
 ```
 
-Example searching using hash:
+## Example searching using hash:
 
 ```
 curl -X POST \
@@ -170,7 +139,7 @@ curl -X POST \
 }'
 ```
 
-Example searching using height:
+## Example searching using height:
 
 ```
 curl -X POST \
