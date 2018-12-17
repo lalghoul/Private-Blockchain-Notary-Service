@@ -31,25 +31,6 @@ class BlockchainController {
     this.initializeMockData();
   }
 
-  getBlockByIndex() {
-    this.app.get("/block/:index", (req, res) => {
-      this.chain.getBlockHeight().then(height => {
-        let count = JSON.parse(height);
-        let index = req.params.index;
-        if (count >= index) {
-          this.chain.getBlock(index).then(block => {
-            res.set(200);
-            res.set("Content-Type", "text/plain");
-            res.set("Data", block);
-            res.set("Connection", "close");
-            res.status(200).send(block);
-          });
-        } else {
-          res.status(404).send("Block Not Found!");
-        }
-      });
-    });
-  }
   getStar() {
     this.app.get("/stars/", (req, res) => {
       this.chain
@@ -105,7 +86,6 @@ class BlockchainController {
     });
   }
   postNewBlock() {
-    let self = this;
     return this.app.post("/block/", (req, res) => {
       let star = JSON.parse(req.body.star);
       let address = req.body.address;
@@ -128,9 +108,7 @@ class BlockchainController {
 
           res.set("Status", "Star Successfully Added");
           this.chain.addBlock(new BlockClass.Block(body)).then(block => {
-            let blockString = block;
-            blockString.storyDecoded = starStory;
-            res.send(blockString);
+            res.send(block);
             res.status(200);
             res.end();
             this.removeValidationRequest(address);
