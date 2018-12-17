@@ -22,17 +22,6 @@ https://nodejs.org/en/
 4. Go to your browser and type: `http://localhost:8000/block`
 5. Function initializeMockData() will add 10 blocks to Blockchain for testing.
 
-## Running the tests
-
-Use POSTMAN or CURL to send GET requests to the Blockchain by adding to the URL block height.
-
-```
-http://localhost:8000/block/[blockheight]
-```
-
-Example URL path:
-http://localhost:8000/block/0, where '0' is the block height.
-
 ## Example submits a validation request
 
 Users start out by submitting a validation request to an API endpoint:

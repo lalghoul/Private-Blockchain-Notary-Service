@@ -27,7 +27,7 @@ class BlockchainController {
     this.postNewBlock();
     this.getStar();
     this.requestValidation();
-    this.initializeMockData();
+    //this.initializeMockData();
   }
 
   getStar() {
