@@ -124,14 +124,7 @@ Now you can search for your star using hash,address or height:
 ## Example searching using address:
 
 ```
-
-curl -X POST \
- http://localhost:8000/stars/ \
- -H 'Content-Type: application/json' \
- -H 'cache-control: no-cache' \
- -d '{
-"address":"1Yf5kmMoETfAvLDmWQ31Z8DYUs5yhb1bC"
-}'
+$ curl http://localhost:8000/stars/address:[ADDRESS]
 
 ```
 
@@ -139,13 +132,8 @@ curl -X POST \
 
 ```
 
-curl -X POST \
- http://localhost:8000/stars/ \
- -H 'Content-Type: application/json' \
- -H 'cache-control: no-cache' \
- -d '{
-"hash":"b0df8e59f9cc5df9df92a14424a80f988faa78bf9a35125b2feae1bf6c31c6ed"
-}'
+$ curl http://localhost:8000/stars/hash:[HASH]
+
 
 ```
 
@@ -153,13 +141,8 @@ curl -X POST \
 
 ```
 
-curl -X POST \
- http://localhost:8000/stars/ \
- -H 'Content-Type: application/json' \
- -H 'cache-control: no-cache' \
- -d '{
-"height":"1"
-}'
+$ curl http://localhost:8000/block/[HEIGHT]
+
 
 ```
 
