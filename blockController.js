@@ -8,7 +8,6 @@ const bitcoinMessage = require("bitcoinjs-message");
 const hex2ascii = require("hex2ascii");
 const util = require("util");
 const TimeoutRequestsWindowTime = 5 * 60 * 1000;
-const ValidRequestWindowTime = 30 * 60 * 1000;
 /* ===== Blockchain Class ==========================
 |  Class with a constructor for new blockchain    |
 |  ================================================*/
@@ -22,17 +21,40 @@ class BlockchainController {
     this.mempoolValid = [];
     this.requests = [];
     this.timeoutRequests = [];
+    this.timeoutMempool = [];
     this.chain = new BlockchainClass.Blockchain();
     this.validateWallet();
     this.postNewBlock();
-    this.getStar();
+    this.getStarByAddress();
+    this.getStarByHash();
     this.requestValidation();
+    this.getBlockByIndex();
     //this.initializeMockData();
   }
+  getBlockByIndex() {
+    this.app.get("/block/:index", (req, res) => {
+      this.chain.getBlockHeight().then(height => {
+        let count = JSON.parse(height);
+        let index = req.params.index;
+        if (count >= index) {
+          this.chain.getBlock(index).then(block => {
+            block = JSON.parse(block);
+            console.log(block);
+            res.set(200);
+            res.send(block);
+          });
+        } else {
+          res.status(404).send("Block Not Found!");
+        }
+      });
+    });
+  }
 
-  getStar() {
-    this.app.get("/stars/", (req, res) => {
+  getStarByHash() {
+    this.app.get("/stars/hash::hash", (req, res) => {
+      console.log(req.params.hash);
       this.chain
+
         .getBlockHeight()
         .then(height => {
           let count = JSON.parse(height);
@@ -43,8 +65,8 @@ class BlockchainController {
               .then(data => {
                 data = JSON.parse(data);
                 let body = data.body;
-                if (req.body.hash != undefined) {
-                  if (data.hash == req.body.hash) {
+                if (req.params.hash != undefined) {
+                  if (data.hash == req.params.hash) {
                     body.stardata.storyDecoded = hex2ascii(body.stardata.story);
                     block.push(data);
                   }
@@ -52,24 +74,8 @@ class BlockchainController {
                     res.send(block);
                     res.end();
                   }
-                } else if (req.body.address != undefined) {
-                  if (body.address == req.body.address) {
-                    body.stardata.storyDecoded = hex2ascii(body.stardata.story);
-                    block.push(data);
-                  }
-                  if (i == count) {
-                    res.send(block);
-                    res.end();
-                  }
-                } else if (req.body.height != undefined) {
-                  if (data.height == req.body.height) {
-                    block = data;
-                    body.stardata.storyDecoded = hex2ascii(body.stardata.story);
-                  }
-                  if (i == count) {
-                    res.send(block);
-                    res.end();
-                  }
+                } else {
+                  res.send("Please define your hash");
                 }
               })
               .catch(err => {
@@ -84,16 +90,59 @@ class BlockchainController {
         });
     });
   }
+
+  getStarByAddress() {
+    this.app.get("/stars/address::address", (req, res) => {
+      console.log(req.params.address);
+      this.chain
+
+        .getBlockHeight()
+        .then(height => {
+          let count = JSON.parse(height);
+          let block = [];
+          for (let i = 0; i <= count; i++) {
+            this.chain
+              .getBlock(i)
+              .then(data => {
+                data = JSON.parse(data);
+                let body = data.body;
+                if (req.params.address != undefined) {
+                  if (data.body.address == req.params.address) {
+                    body.stardata.storyDecoded = hex2ascii(body.stardata.story);
+                    block.push(data);
+                  }
+                  if (i == count) {
+                    res.send(block);
+                    res.end();
+                  }
+                } else {
+                  res.send("Please define your Address");
+                }
+              })
+              .catch(err => {
+                console.log(err);
+                res.send(err);
+              });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          res.send(err);
+        });
+    });
+  }
+
   postNewBlock() {
     return this.app.post("/block/", (req, res) => {
-      let star = JSON.parse(req.body.star);
+      let star = req.body.star;
       let address = req.body.address;
       if (
         req.body.star != undefined ||
         star.dec != undefined ||
         star.ra != undefined
       ) {
-        let starStory = star.story;
+        let starOBJ = JSON.parse(star);
+        let starStory = starOBJ.story;
         let storyCount = starStory.length;
         if (this.verifyAddressRequest(address) && storyCount < 250) {
           let body = {
@@ -133,6 +182,8 @@ class BlockchainController {
   }
   removeValidationRequestMempool(address) {
     delete this.mempoolValid[address];
+    delete this.timeoutMempool[address];
+    console.log("Address Successfully Removed From the Mempool " + address);
   }
   verifyAddressRequest(address) {
     if (typeof this.mempoolValid[address] != "undefined") {
@@ -196,11 +247,15 @@ class BlockchainController {
   validateWallet() {
     let self = this;
     self.app.post("/message-signature/validate/", (req, res) => {
-      res.header("Content-Type", "application/x-www-form-urlencoded");
       let signature = req.body.signature;
       let address = req.body.address;
+      let requestedTimestamp = new Date()
+        .getTime()
+        .toString()
+        .slice(0, -3);
       if (!this.verifyAddressRequest(address)) {
         if (typeof self.timeoutRequests[address] != "undefined") {
+          // Verify if the signature correct
           let isValid = bitcoinMessage.verify(
             self.requests[address].message,
             address,
@@ -208,24 +263,37 @@ class BlockchainController {
           );
 
           if (isValid) {
+            let timeElapse =
+              new Date()
+                .getTime()
+                .toString()
+                .slice(0, -3) - requestedTimestamp;
+            let timeLeft = TimeoutRequestsWindowTime / 1000 - timeElapse;
+            this.timeoutMempool[address] = requestedTimestamp;
             let status = {
               address: address,
               requestTimeStamp: this.requests[address].requestedTimestamp,
               message: this.requests[address].message,
-              validationWindow: 1800,
+              validationWindow: timeLeft,
               messageSignature: true
             };
-            let bodyResponse = { registerStar: true, status: status };
-            this.mempoolValid[address] = bodyResponse;
+            // Adding the request to the mempool
+            this.mempoolValid[address] = { registerStar: true, status: status };
+
+            // Remove Validtions Request From requests
+            this.removeValidationRequest(address);
+
+            // Remove Valdtion Request After 5mins from the mempool
             setTimeout(function() {
               self.removeValidationRequestMempool(address);
-            }, ValidRequestWindowTime);
+            }, TimeoutRequestsWindowTime);
 
+            // Send Response to body
             res.status(200);
-            res.send(bodyResponse);
-            this.removeValidationRequest(address);
+            res.send(this.mempoolValid[address]);
             res.end();
           } else {
+            res.send("Signature invalid" + isValid);
             res.set("Error", "Signature invalid" + isValid);
             res.end();
           }
@@ -234,11 +302,23 @@ class BlockchainController {
             "Error",
             "No request matched for this address! Please make a request"
           );
+          res.send(
+            "No request matched for this address! Please make a request"
+          );
           res.end();
         }
       } else {
         console.log("You already made a request. Please send your star data");
-        res.send(self.mempoolValid[address]);
+        console.log(this.mempoolValid[address].status.validationWindow);
+        let timeElapse =
+          new Date()
+            .getTime()
+            .toString()
+            .slice(0, -3) - this.timeoutMempool[address];
+        let timeLeft = TimeoutRequestsWindowTime / 1000 - timeElapse;
+        this.mempoolValid[address].status.validationWindow = timeLeft;
+        console.log(this.mempoolValid[address]);
+        res.send(this.mempoolValid[address]);
       }
     });
   }
