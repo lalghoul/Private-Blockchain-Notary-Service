@@ -141,8 +141,7 @@ class BlockchainController {
         star.dec != undefined ||
         star.ra != undefined
       ) {
-        let starOBJ = JSON.parse(star);
-        let starStory = starOBJ.story;
+        let starStory = star.story;
         let storyCount = starStory.length;
         if (this.verifyAddressRequest(address) && storyCount < 250) {
           let body = {
@@ -202,8 +201,8 @@ class BlockchainController {
           .getTime()
           .toString()
           .slice(0, -3);
-        let starRegistery = "starRegistery";
-        req.userData = address + ":" + requestedTimestamp + ":" + starRegistery;
+        let starRegistry = "starRegistry";
+        req.userData = address + ":" + requestedTimestamp + ":" + starRegistry;
         self.timeoutRequests[address] = setTimeout(function() {
           self.removeValidationRequest(address);
         }, TimeoutRequestsWindowTime);
