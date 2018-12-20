@@ -39,6 +39,9 @@ class BlockchainController {
         if (count >= index) {
           this.chain.getBlock(index).then(block => {
             block = JSON.parse(block);
+            block.body.stardata.storyDecoded = hex2ascii(
+              block.body.stardata.story
+            );
             console.log(block);
             res.set(200);
             res.send(block);
@@ -137,8 +140,8 @@ class BlockchainController {
       let star = req.body.star;
       let address = req.body.address;
       if (
-        req.body.star != undefined ||
-        star.dec != undefined ||
+        req.body.star != undefined &&
+        star.dec != undefined &&
         star.ra != undefined
       ) {
         let starStory = star.story;
